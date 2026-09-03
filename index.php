@@ -1,4 +1,16 @@
+<?php
+session_start();
+require_once 'db.php';
 
+
+ if (isset($_SESSION['user_id']) && $_SESSION['user_role'] === 'Employee') {
+    header("Location: dashboard.php");
+    exit();
+} 
+
+$stmt = $pdo->query("SELECT * FROM tournaments WHERE status = 'Active'");
+$active_tournaments = $stmt->fetchAll();
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
