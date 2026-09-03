@@ -1,3 +1,34 @@
+<?php
+session_start();
+require_once 'db.php';
+
+if (isset($_SESSION['user_id'])) {
+    header("Location: dashboard.php");
+    exit();
+}
+
+$error = "";
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $identifier = trim($_POST['identifier']);
+    $password = trim($_POST['password']);
+
+    $stmt = $pdo->prepare("SELECT * FROM users WHERE (email = ? OR student_id = ?) AND role = 'Employee'");
+    $stmt->execute([$identifier, $identifier]);
+    $user = $stmt->fetch();
+
+    if ($user && password_verify($password, $user['password'])) {
+        $_SESSION['user_id'] = $user['id'];
+        $_SESSION['user_name'] = $user['name'];
+        $_SESSION['user_role'] = $user['role'];
+        header("Location: dashboard.php");
+        exit();
+    } else {
+        $error = "Invalid credentials or account does not exist.";
+    }
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
